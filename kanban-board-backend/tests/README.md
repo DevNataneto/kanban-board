@@ -28,50 +28,45 @@ Cada tarefa possui título, descrição, status e prioridade.
 
 ## Testes Unitários — Backend
 
-### `status_valido()`
+### `Task` (classe)
 | Caso | Entrada | Esperado |
 |------|---------|----------|
-| ✅ status válido | `"A Fazer"` | `True` |
-| ✅ status válido | `"Fazendo"` | `True` |
-| ✅ status válido | `"Feito"` | `True` |
-| ❌ status inválido | `"Pendente"` | `False` |
-| 🔲 string vazia | `""` | `False` |
-
-### `prioridade_valida()`
-| Caso | Entrada | Esperado |
-|------|---------|----------|
-| ✅ prioridade válida | `"Alta"` | `True` |
-| ✅ prioridade válida | `"Média"` | `True` |
-| ✅ prioridade válida | `"Baixa"` | `True` |
-| ❌ prioridade inválida | `"Urgente"` | `False` |
-| 🔲 string vazia | `""` | `False` |
+| ✅ valores padrão | `Task(title="Estudar")` | `status="A Fazer"`, `priority="Baixa"`, `description=None` |
+| ✅ campos preenchidos | `Task(title="Estudar", status="Fazendo", priority="Alta")` | retorna objeto com os valores informados |
+| ❌ título ausente | `Task()` | erro de validação do Pydantic |
 
 ---
 
-## Testes Unitários — Frontend
+## Testes de Integração — Backend
 
-### `createTask()`
-| Caso | Entrada | Esperado |
-|------|---------|----------|
-| ✅ tarefa válida | título preenchido | tarefa aparece na coluna correta |
-| ❌ título vazio | título `""` | botão não deve criar |
+### `db_connect()`
+| Caso | Esperado |
+|------|----------|
+| ✅ banco rodando | retorna objeto de conexão válido |
 
----
-
-## Testes de Integração
-
-### POST /tasks
-| Caso | Entrada | Esperado |
-|------|---------|----------|
-| ✅ dados válidos | título + status + prioridade válidos | retorna tarefa com id gerado |
-| ❌ título vazio | `title: ""` | retorna erro 400 |
-| ❌ prioridade inválida | `priority: "Urgente"` | retorna erro 400 |
-
-### GET /tasks
+### `GET /tasks`
 | Caso | Esperado |
 |------|----------|
 | ✅ banco com tarefas | retorna lista de tarefas |
 | ✅ banco vazio | retorna lista vazia `[]` |
+
+### `POST /tasks`
+| Caso | Entrada | Esperado |
+|------|---------|----------|
+| ✅ dados válidos | título + status + prioridade válidos | retorna tarefa com `id` gerado pelo banco |
+| ❌ título vazio | `title: ""` | erro de validação |
+
+### `PATCH /tasks/{id}`
+| Caso | Entrada | Esperado |
+|------|---------|----------|
+| ✅ atualização válida | `id` existente + novos dados | retorna tarefa atualizada |
+| ❌ id inexistente | `id` que não existe no banco | retorna erro |
+
+### `DELETE /tasks/{id}`
+| Caso | Entrada | Esperado |
+|------|---------|----------|
+| ✅ id existente | `id` de tarefa existente | retorna mensagem de confirmação |
+| ❌ id inexistente | `id` que não existe no banco | retorna erro |
 
 ---
 
