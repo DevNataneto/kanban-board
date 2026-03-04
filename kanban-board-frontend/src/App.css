@@ -1,0 +1,205 @@
+/* Importando fonte Inter do Google Fonts — substitui fontes padrão do sistema */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Reset global — remove margens e paddings padrão de todos os elementos */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* padding e border são incluídos no tamanho do elemento */
+}
+
+body {
+  background: linear-gradient(135deg, #001f3f 0%, #003366 50%, #0084ff 100%); /* gradiente diagonal azul escuro → azul claro */
+  font-family: 'Inter', sans-serif; /* aplica a fonte Inter em todo o site */
+  color: #333; /* cor de texto padrão */
+  min-height: 100vh; /* garante que o gradiente ocupa a tela inteira mesmo com pouco conteúdo */
+}
+
+.App {
+  max-width: 1400px; /* limita a largura em telas muito grandes */
+  margin: 0 auto; /* centraliza horizontalmente — divide o espaço igual nos dois lados */
+  padding: 0 40px; /* espaço nas laterais para não colar nas bordas */
+}
+
+/* Estilo base do h1 — sobrescrito pelo .kanban-title */
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #ffffff;
+  letter-spacing: -0.02em; /* aperta levemente as letras — visual mais moderno */
+}
+
+.kanban-title {
+  font-size: 4rem; /* título grande e chamativo */
+  font-weight: 900; /* peso máximo da fonte */
+  color: #ffffff; /* fallback caso o gradiente não funcione */
+  margin-top: 32px; /* espaço acima do título */
+  letter-spacing: -0.02em; /* letras levemente apertadas */
+  text-align: center; /* centraliza o título */
+  background: linear-gradient(140deg, #6697c5, #0084ff); /* gradiente claro -> azul aplicado no texto */
+  -webkit-background-clip: text; /* faz o fundo aparecer só dentro das letras (Safari/Chrome antigo) */
+  background-clip: text; /* versão padrão moderna */
+  -webkit-text-fill-color: transparent; /* torna o texto transparente para o gradiente aparecer */
+}
+
+/* ─── Formulário ────────────────────────────────────────────── */
+
+.form {
+  background: rgba(255, 255, 255, 0.95); /* branco quase opaco — leve transparência */
+  padding: 28px; /* espaçamento interno */
+  border-radius: 16px; /* cantos arredondados */
+  box-shadow: 4px 5px 32px rgb(0 0 0 / 20%); /* sombra para dar profundidade */
+  display: grid; /* empilha os campos em coluna */
+  gap: 50px; /* espaço entre cada campo do formulário */
+  margin-bottom: 32px; /* espaço abaixo do formulário antes do kanban */
+}
+
+.form input, .form select {
+  padding: 12px 16px; /* espaço interno dos campos */
+  border: 1.5px solid #e2e8f0; /* borda cinza clara */
+  border-radius: 10px; /* cantos arredondados */
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif; /* garante a fonte nos inputs — navegadores usam fonte própria por padrão */
+  outline: none; /* remove o contorno padrão do navegador ao focar */
+  transition: border-color 0.2s, box-shadow 0.2s; /* animação suave ao focar */
+  background: #f8fafc; /* fundo levemente acinzentado */
+  color: #1a1a2e; /* texto escuro */
+}
+
+.form input:focus, .form select:focus {
+  border-color: #0084ff; /* borda azul ao focar */
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); /* brilho roxo suave ao redor do campo */
+  background: white; /* fundo branco ao focar */
+}
+
+.form button {
+  padding: 12px 24px;
+  background:linear-gradient(140deg, #6697c5, #0084ff); /* gradiente claro -> azul aplicado no texto */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  cursor: pointer; /* cursor de mãozinha ao passar o mouse */
+  transition: opacity 0.2s, transform 0.1s; /* animação suave no hover */
+}
+
+.form button:hover {
+  opacity: 0.9; /* levemente transparente ao passar o mouse */
+  transform: translateY(-1px); /* sobe 1px — efeito de elevação */
+}
+
+/* ─── Kanban ────────────────────────────────────────────────── */
+
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 colunas de tamanho igual */
+  gap: 20px; /* espaço entre as colunas */
+}
+
+.coluna {
+  background: rgba(255, 255, 255, 0.07); /* fundo quase transparente — efeito glassmorphism */
+  border: 1px solid rgba(255, 255, 255, 0.12); /* borda branca semitransparente */
+  border-radius: 16px;
+  padding: 16px;
+  min-height: 400px; /* altura mínima para colunas vazias não colapsarem */
+  backdrop-filter: blur(8px); /* desfoca o fundo atrás da coluna — efeito de vidro fosco */
+}
+
+.coluna h2 {
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.7); /* branco com transparência */
+  text-transform: uppercase; /* texto em maiúsculas */
+  letter-spacing: 0.08em; /* letras mais espaçadas — comum em labels uppercase */
+}
+
+/* ─── Card ──────────────────────────────────────────────────── */
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* sombra suave */
+  border-left: 4px solid #ddd; /* borda colorida à esquerda — cor muda pela prioridade */
+  transition: transform 0.15s, box-shadow 0.15s; /* animação suave no hover */
+}
+
+.card:hover {
+  transform: translateY(-2px); /* sobe 2px ao passar o mouse */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); /* sombra maior ao hover — reforça elevação */
+}
+
+/* Cor da borda esquerda muda conforme a prioridade */
+.prioridade-baixa { border-left-color: #22c55e; } /* verde */
+.prioridade-média { border-left-color: #f59e0b; } /* amarelo */
+.prioridade-alta  { border-left-color: #ef4444; } /* vermelho */
+
+.card-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  color: #1a1a2e;
+}
+
+.card-desc {
+  font-size: 0.8rem;
+  color: #64748b; /* cinza médio — menos destaque que o título */
+  margin-bottom: 10px;
+  line-height: 1.4; /* altura de linha para facilitar leitura */
+}
+
+/* Badge de prioridade */
+.badge {
+  display: inline-block; /* ocupa só o espaço do conteúdo */
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px; /* arredondado tipo pílula */
+  background: #f0f2f5; /* fallback cinza */
+  color: #555;
+}
+
+/* Cor da badge muda conforme a prioridade */
+.badge.baixa { background: #dcfce7; color: #16a34a; } /* verde claro */
+.badge.média { background: #fef9c3; color: #ca8a04; } /* amarelo claro */
+.badge.alta  { background: #fee2e2; color: #dc2626; } /* vermelho claro */
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.card-actions button {
+  flex: 1; /* botões dividem o espaço igualmente */
+  padding: 7px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  background: #4f46e5; /* roxo padrão */
+  color: white;
+  transition: opacity 0.2s;
+}
+
+.card-actions button:hover {
+  opacity: 0.85; /* levemente transparente ao hover */
+}
+
+/* Botão deletar — sobrescreve o roxo padrão com vermelho */
+.btn-delete {
+  background: #fee2e2 !important; /* fundo vermelho claro */
+  color: #ef4444 !important; /* texto vermelho */
+}
+
+.btn-delete:hover {
+  background: #fecaca !important; /* vermelho um pouco mais forte no hover */
+  opacity: 1 !important; /* cancela o opacity do .card-actions button:hover */
+}
