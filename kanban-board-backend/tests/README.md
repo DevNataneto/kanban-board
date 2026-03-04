@@ -18,10 +18,10 @@ Cada tarefa possui título, descrição, status e prioridade.
 | PATCH | /tasks/{id} | Atualiza uma tarefa |
 | DELETE | /tasks/{id} | Deleta uma tarefa |
 
-### Regras de negócio
+### Regras de negócio (Aceitação)
 - Status válidos: `A Fazer`, `Fazendo`, `Feito`
 - Prioridades válidas: `Baixa`, `Média`, `Alta`
-- Título é obrigatório
+- Título é obrigatório 
 - Descrição é opcional
 
 ---
