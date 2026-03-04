@@ -95,6 +95,7 @@ def create_task(task: Task):
 # Endpoint para atualizar uma tarefa existente no banco de dados
 @app.patch("/tasks/{task_id}")
 def update_task(task_id: int, task: Task):
+
     conn = db_connect()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute(
@@ -102,6 +103,8 @@ def update_task(task_id: int, task: Task):
         (task.title, task.description, task.status, task.priority, task_id)
     )
     updated_task = cursor.fetchone()
+    if updated_task is None:
+        raise ValueError(f"Tarefa com ID {task_id} não encontrada")
     conn.commit()
     cursor.close()
     conn.close()
@@ -113,6 +116,8 @@ def delete_task(task_id: int):
     conn = db_connect()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM tasks WHERE id = %s", (task_id,))
+    if cursor.rowcount == 0:
+        raise ValueError(f"Tarefa com ID {task_id} não encontrada")
     conn.commit()
     cursor.close()
     conn.close()
