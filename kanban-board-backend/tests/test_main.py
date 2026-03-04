@@ -141,6 +141,7 @@ def test_delete_task_id_inexistente():
 def test_fluxo_completo(page: Page):
     page.goto("http://localhost:4173")
     page.wait_for_load_state("networkidle")
+    page.screenshot(path="screenshot.png")
 
     # verifica se a página carregou
     expect(page.get_by_role("heading", name="Kanban Board")).to_be_visible()

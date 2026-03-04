@@ -78,3 +78,9 @@ jobs:
       - name: Rodar testes 
         working-directory: kanban-board-backend
         run: uv run pytest tests/test_main.py -v
+      - name: Salvar screenshots
+        if: failure()  # só salva se falhar
+        uses: actions/upload-artifact@v4
+        with:
+            name: screenshots
+            path: kanban-board-backend/screenshot.png
