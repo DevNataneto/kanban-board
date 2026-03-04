@@ -67,7 +67,13 @@ jobs:
         run: npm run preview &
 
       - name: Aguardar serviços subirem
-        run: sleep 5
+        run: sleep 15
+
+      - name: Verificar se o frontend está respondendo
+        run: curl http://localhost:4173
+
+      - name: Verificar se o backend está respondendo
+        run: curl http://localhost:8000/tasks
 
       - name: Rodar testes 
         working-directory: kanban-board-backend
