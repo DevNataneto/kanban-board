@@ -140,6 +140,7 @@ def test_delete_task_id_inexistente():
 # Testando o fluxo completo de criação, obtenção, atualização e exclusão de uma tarefa
 def test_fluxo_completo(page: Page):
     page.goto("http://localhost:4173")
+    page.wait_for_load_state("networkidle")
 
     # verifica se a página carregou
     expect(page.get_by_role("heading", name="Kanban Board")).to_be_visible()
@@ -160,6 +161,7 @@ def test_fluxo_completo(page: Page):
 # Testando o avanço de uma tarefa para a próxima coluna
 def test_avancar_tarefa(page: Page):
     page.goto("http://localhost:4173")
+    page.wait_for_load_state("networkidle")
     # primeiro cria a tarefa pode ser sem descrição, prioridade e status, já que tem valores padrão
     page.get_by_role("textbox", name="Título").fill("Tarefa para avançar")
     page.get_by_role("button", name="Criar tarefa").click()
@@ -176,6 +178,7 @@ def test_avancar_tarefa(page: Page):
 # Testando a deleção de uma tarefa
 def test_deletar_tarefa(page: Page):
     page.goto("http://localhost:4173")
+    page.wait_for_load_state("networkidle")
     # primeiro cria a tarefa pode ser sem descrição, prioridade e status, já que tem valores padrão
     page.get_by_role("textbox", name="Título").fill("Tarefa para deletar")
     page.get_by_role("button", name="Criar tarefa").click()
