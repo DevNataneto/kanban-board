@@ -162,10 +162,15 @@ def test_avancar_tarefa(page: Page):
     page.on("console", lambda msg: print(f"CONSOLE: {msg.text}"))
     page.on("requestfailed", lambda req: print(f"REQUEST FAILED: {req.url}"))
     page.goto("http://localhost:4173")
-    page.wait_for_load_state("networkidle")  # Espera a página carregar completamente
+    page.wait_for_load_state("networkidle")
+
     # primeiro cria a tarefa pode ser sem descrição, prioridade e status, já que tem valores padrão
     page.get_by_role("textbox", name="Título").fill("Tarefa para avançar")
     page.get_by_role("button", name="Criar tarefa").click()
+    
+    coluna_a_fazer = page.locator(".coluna", has_text="A Fazer")
+    coluna_a_fazer.wait_for(state="visible")
+    coluna_a_fazer.get_by_text("Tarefa para avançar", exact=True).wait_for(state="visible")
 
     # depois avança
     page.get_by_role("button", name="Avançar →").first.click()
@@ -185,6 +190,8 @@ def test_deletar_tarefa(page: Page):
     # primeiro cria a tarefa pode ser sem descrição, prioridade e status, já que tem valores padrão
     page.get_by_role("textbox", name="Título").fill("Tarefa para deletar")
     page.get_by_role("button", name="Criar tarefa").click()
+
+    page.get_by_text("Tarefa para deletar", exact=True).wait_for(state="visible")
 
     # depois deleta
     page.get_by_role("button", name="Deletar").first.click()
