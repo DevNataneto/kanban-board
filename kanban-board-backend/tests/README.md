@@ -93,4 +93,3 @@ Cada tarefa possui título, descrição, status e prioridade.
 ### Fluxo deletar tarefa
 1. Clicar em "Deletar"
 2. Verificar se sumiu da tela
-
