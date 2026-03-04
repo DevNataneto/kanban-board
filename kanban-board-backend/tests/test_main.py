@@ -139,7 +139,9 @@ def test_delete_task_id_inexistente():
 
 # Testando o fluxo completo de criação, obtenção, atualização e exclusão de uma tarefa
 def test_fluxo_completo(page: Page):
-    page.goto("http://localhost:4173")
+    page.on("console", lambda msg: print(f"CONSOLE: {msg.text}"))
+    page.on("requestfailed", lambda req: print(f"REQUEST FAILED: {req.url}"))
+    page.goto("http://localhost:4173/")
     page.wait_for_load_state("networkidle")
     page.screenshot(path="screenshot.png")
 
@@ -178,7 +180,7 @@ def test_avancar_tarefa(page: Page):
 
 # Testando a deleção de uma tarefa
 def test_deletar_tarefa(page: Page):
-    page.goto("http://localhost:4173")
+    page.goto("http://localhost:4173/")
     page.wait_for_load_state("networkidle")
     # primeiro cria a tarefa pode ser sem descrição, prioridade e status, já que tem valores padrão
     page.get_by_role("textbox", name="Título").fill("Tarefa para deletar")
