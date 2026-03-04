@@ -43,4 +43,4 @@ jobs:
 
       - name: Rodar os testes
         working-directory: kanban-board-backend
-        run: uv run pytest -v
+        run: uv run pytest tests/ -v
