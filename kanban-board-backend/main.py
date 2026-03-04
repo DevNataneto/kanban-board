@@ -22,7 +22,7 @@ app.add_middleware(
 class Task(BaseModel):
     title: str
     description: Optional[str] = None # Campo opcional para descrição da tarefa
-    status: str = "Pendente"
+    status: str = "A Fazer"
     priority: str = "Baixa"
 
 # Função para conectar ao banco de dados PostgreSQL
@@ -47,7 +47,7 @@ def startup_event():
             id SERIAL PRIMARY KEY,
             title TEXT NOT NULL,
             description TEXT,
-            status TEXT NOT NULL DEFAULT 'Pendente',
+            status TEXT NOT NULL DEFAULT 'A Fazer',
             priority TEXT NOT NULL DEFAULT 'Baixa'
         )
     """)
