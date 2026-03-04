@@ -26,16 +26,22 @@ function App() {
   // Função para criar uma nova tarefa
   async function createTask() {
     // POST para criar uma nova tarefa no backend
+    try {
     const res = await fetch(`${API}/tasks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newTask)
     })
+    console.log("status:", res.status) 
     // Recebe a tarefa criada e atualiza o estado
     const created = await res.json()
     setTasks([...tasks, created])
     setNewTask({ title: "", description: "", status: "A Fazer", priority: "Baixa" })
     console.log("Tarefa criada:", created)
+   }catch (error) {
+      console.error("Erro ao criar tarefa:", error)
+    }
+
   }
   // Função para deletar uma tarefa
   async function deleteTask(id) {
