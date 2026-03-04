@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 import psycopg2.extras
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional
 
 
@@ -12,7 +12,7 @@ app = FastAPI()
 # Configurando o CORS para permitir requisições do frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origin_regex=r"http://localhost:\d{4}",  # Permitir qualquer porta em localhost
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -22,8 +22,14 @@ app.add_middleware(
 class Task(BaseModel):
     title: str
     description: Optional[str] = None # Campo opcional para descrição da tarefa
-    status: str = "Pendente"
+    status: str = "A Fazer"
     priority: str = "Baixa"
+
+    @field_validator('title')
+    def validate_title(cls, value):
+        if not value.strip():
+            raise ValueError("O título da tarefa não pode ser vazio")
+        return value
 
 # Função para conectar ao banco de dados PostgreSQL
 def db_connect():
@@ -47,11 +53,14 @@ def startup_event():
             id SERIAL PRIMARY KEY,
             title TEXT NOT NULL,
             description TEXT,
-            status TEXT NOT NULL DEFAULT 'Pendente',
+            status TEXT NOT NULL DEFAULT 'A Fazer',
             priority TEXT NOT NULL DEFAULT 'Baixa'
         )
     """)
     conn.commit()
+    # Lançar erro se a tabela não for criada corretamente (pode ser útil para depuração)
+    if cursor.rowcount == 0:
+        raise ValueError("A tabela 'tasks' não foi criada corretamente")
     cursor.close()
     conn.close()
 
@@ -86,6 +95,7 @@ def create_task(task: Task):
 # Endpoint para atualizar uma tarefa existente no banco de dados
 @app.patch("/tasks/{task_id}")
 def update_task(task_id: int, task: Task):
+
     conn = db_connect()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute(
@@ -93,6 +103,8 @@ def update_task(task_id: int, task: Task):
         (task.title, task.description, task.status, task.priority, task_id)
     )
     updated_task = cursor.fetchone()
+    if updated_task is None:
+        raise ValueError(f"Tarefa com ID {task_id} não encontrada")
     conn.commit()
     cursor.close()
     conn.close()
@@ -104,6 +116,8 @@ def delete_task(task_id: int):
     conn = db_connect()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM tasks WHERE id = %s", (task_id,))
+    if cursor.rowcount == 0:
+        raise ValueError(f"Tarefa com ID {task_id} não encontrada")
     conn.commit()
     cursor.close()
     conn.close()

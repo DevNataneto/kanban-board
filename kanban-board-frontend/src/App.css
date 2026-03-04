@@ -147,10 +147,10 @@ h1 {
 }
 
 .card-desc {
-  font-size: 0.8rem;
-  color: #64748b; /* cinza médio — menos destaque que o título */
+  font-size: .9rem;
+  color: #47505c; /* cinza médio — menos destaque que o título */
   margin-bottom: 10px;
-  line-height: 1.4; /* altura de linha para facilitar leitura */
+  line-height: 1.8; /* altura de linha para facilitar leitura */
 }
 
 /* Badge de prioridade */

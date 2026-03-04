@@ -1,0 +1,86 @@
+name: Testes Unitários, de Integração e End-to-End
+
+on:
+  push:
+    branches: ["main", "implementacao-testes"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: kanban-board
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar uv
+        run: pip install uv
+
+      - name: Instalar dependências do backend
+        working-directory: kanban-board-backend
+        run: uv sync
+
+      - name: Instalar dependências do frontend
+        working-directory: kanban-board-frontend
+        run: npm install
+
+      - name: Build do frontend
+        working-directory: kanban-board-frontend
+        run: npm run build
+
+      - name: Instalar browsers do Playwright
+        working-directory: kanban-board-backend
+        run: uv run playwright install chromium --with-deps
+
+      - name: Subir o backend
+        working-directory: kanban-board-backend
+        run: uv run fastapi run main.py &
+
+      - name: Subir o frontend
+        working-directory: kanban-board-frontend
+        run: npm run preview &
+
+      - name: Aguardar serviços subirem
+        run: sleep 15
+
+      - name: Verificar se o frontend está respondendo
+        run: curl http://localhost:4173
+
+      - name: Verificar se o backend está respondendo
+        run: curl http://localhost:8000/tasks
+
+      - name: Rodar testes 
+        working-directory: kanban-board-backend
+        run: uv run pytest tests/test_main.py -v
+      - name: Salvar screenshots
+        if: failure()  # só salva se falhar
+        uses: actions/upload-artifact@v4
+        with:
+            name: screenshots
+            path: kanban-board-backend/screenshot.png
