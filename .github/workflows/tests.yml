@@ -1,4 +1,4 @@
-name: Testes Backend
+name: Testes Unitários, de Integração e End-to-End
 
 on:
   push:
@@ -34,13 +34,41 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Instalar uv
         run: pip install uv
 
-      - name: Instalar dependências
+      - name: Instalar dependências do backend
         working-directory: kanban-board-backend
         run: uv sync
 
-      - name: Rodar os testes
+      - name: Instalar dependências do frontend
+        working-directory: kanban-board-frontend
+        run: npm install
+
+      - name: Build do frontend
+        working-directory: kanban-board-frontend
+        run: npm run build
+
+      - name: Instalar browsers do Playwright
         working-directory: kanban-board-backend
-        run: uv run pytest tests/ -v
+        run: uv run playwright install chromium --with-deps
+
+      - name: Subir o backend
+        working-directory: kanban-board-backend
+        run: uv run fastapi run main.py &
+
+      - name: Subir o frontend
+        working-directory: kanban-board-frontend
+        run: npm run preview &
+
+      - name: Aguardar serviços subirem
+        run: sleep 5
+
+      - name: Rodar testes 
+        working-directory: kanban-board-backend
+        run: uv run pytest tests/test_main.py -v
