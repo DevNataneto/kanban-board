@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 import psycopg2.extras
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional
 
 
@@ -24,6 +24,12 @@ class Task(BaseModel):
     description: Optional[str] = None # Campo opcional para descrição da tarefa
     status: str = "A Fazer"
     priority: str = "Baixa"
+
+    @field_validator('title')
+    def validate_title(cls, value):
+        if not value.strip():
+            raise ValueError("O título da tarefa não pode ser vazio")
+        return value
 
 # Função para conectar ao banco de dados PostgreSQL
 def db_connect():
@@ -52,6 +58,9 @@ def startup_event():
         )
     """)
     conn.commit()
+    # Lançar erro se a tabela não for criada corretamente (pode ser útil para depuração)
+    if cursor.rowcount == 0:
+        raise ValueError("A tabela 'tasks' não foi criada corretamente")
     cursor.close()
     conn.close()
 
