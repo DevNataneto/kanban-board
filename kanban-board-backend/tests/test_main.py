@@ -6,6 +6,7 @@
 import pytest
 from main import Task
 from main import db_connect, startup_event, get_tasks, create_task, update_task, delete_task
+from playwright.sync_api import Page, expect
 
 # ========================================
 #           TESTES UNITÁRIOS
@@ -132,6 +133,62 @@ def test_delete_task_id_inexistente():
 
 
 
+# ========================================
+#         TESTES DE END-TO-END
+# ========================================
+
+# Testando o fluxo completo de criação, obtenção, atualização e exclusão de uma tarefa
+def test_fluxo_completo(page: Page):
+    page.goto("http://localhost:5173")
+
+    # verifica se a página carregou
+    expect(page.get_by_role("heading", name="Kanban Board")).to_be_visible()
+
+    # preenche o formulário
+    page.get_by_role("textbox", name="Título").fill("Tarefa de teste")
+    page.get_by_role("textbox", name="Descrição").fill("Descrição da tarefa de teste")
+    page.get_by_role("combobox").first.select_option("Fazendo")
+    page.get_by_role("combobox").nth(1).select_option("Média")
+    page.get_by_role("button", name="Criar tarefa").click()
+
+    # verifica se apareceu na coluna correta
+    coluna_fazendo = page.locator(".coluna", has_text="Fazendo")
+    tarefa_teste = coluna_fazendo.get_by_text("Tarefa de teste", exact=True)
+    tarefa_teste.wait_for(state="visible")
+    expect(tarefa_teste).to_be_visible()
+
+# Testando o avanço de uma tarefa para a próxima coluna
+def test_avancar_tarefa(page: Page):
+    page.goto("http://localhost:5173")
+    # primeiro cria a tarefa pode ser sem descrição, prioridade e status, já que tem valores padrão
+    page.get_by_role("textbox", name="Título").fill("Tarefa para avançar")
+    page.get_by_role("button", name="Criar tarefa").click()
+
+    # depois avança
+    page.get_by_role("button", name="Avançar →").first.click()
+
+    # verifica se foi para a coluna certa
+    coluna_fazendo = page.locator(".coluna", has_text="Fazendo")
+    tarefa = coluna_fazendo.get_by_text("Tarefa para avançar", exact=True)
+    tarefa.wait_for(state="visible")
+    expect(tarefa).to_be_visible()
+
+# Testando a deleção de uma tarefa
+def test_deletar_tarefa(page: Page):
+    page.goto("http://localhost:5173")
+    # primeiro cria a tarefa pode ser sem descrição, prioridade e status, já que tem valores padrão
+    page.get_by_role("textbox", name="Título").fill("Tarefa para deletar")
+    page.get_by_role("button", name="Criar tarefa").click()
+
+    # depois deleta
+    page.get_by_role("button", name="Deletar").first.click()
+    # espera a tarefa sumir da tela 
+    page.get_by_text("Tarefa para deletar", exact=True).wait_for(state="detached") 
+
+    # verifica se sumiu da tela
+    expect(page.get_by_text("Tarefa para deletar", exact=True)).not_to_be_visible()
+
+    
 
 
 
