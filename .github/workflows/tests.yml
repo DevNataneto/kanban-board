@@ -1,0 +1,46 @@
+name: Testes Backend
+
+on:
+  push:
+    branches: ["main", "implementacao-testes"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: kanban-board
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar uv
+        run: pip install uv
+
+      - name: Instalar dependências
+        working-directory: kanban-board-backend
+        run: uv sync
+
+      - name: Rodar os testes
+        working-directory: kanban-board-backend
+        run: uv run pytest -v
